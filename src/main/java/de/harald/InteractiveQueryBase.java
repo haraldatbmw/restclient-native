@@ -35,4 +35,8 @@ public abstract class InteractiveQueryBase<K, V> {
             return null;
         }
     }
+
+    /*
+    logic for kafka-streams interactive queries not included for simplicity
+    */
 }
