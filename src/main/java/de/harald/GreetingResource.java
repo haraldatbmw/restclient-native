@@ -1,49 +1,59 @@
 package de.harald;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
-
 @Path("/hello")
+@ApplicationScoped
 public class GreetingResource {
+
+    @Inject
+    GreetingInteractiveQuery iq;
 
     // WORKS BUT PRODUCES EXCEPTIONS IN THE LOG-FILE
     @GET
+    @Path("/jax-rs")
     @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
+    public String withJaxRsClient() {
         Client restClient = ClientBuilder.newClient();
         String result = restClient
             .target("http://localhost:8080")
-            .path("/hello/echo")
+            .path("/hello/one/100")
             .request(MediaType.TEXT_PLAIN)
             .get(String.class);
         return "hello " + result;
     }
 
-    // WORKS WITHOUT EXCEPTIONS
+    // WORKS WITHOUT SIDE-EFFECTS
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("/mp-rest-client")
-    public String hello2() throws MalformedURLException {
-        URL apiUrl = new URL("http://localhost:8080/hello");
-        GreetingService srv = RestClientBuilder.newBuilder()
-            .baseUrl(apiUrl)
-            .build(GreetingService.class);
-        return "hello " + srv.echo();
+    @Produces(MediaType.TEXT_PLAIN) 
+    public String withMpRestClient() {
+        return iq.getOneFromRemote(200l);
     }
 
     @GET
-    @Path("/echo")
+    @Path("/one/{id}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String echo() {
-        return "echo";
+    public String getOne(@PathParam("id") Long id) {
+        return "one " + id;
     }
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.TEXT_PLAIN)
+    public List<String> getAll() {
+        return Arrays.asList("a", "b", "c");
+    }
+
 }
