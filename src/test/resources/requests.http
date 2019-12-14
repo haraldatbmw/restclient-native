@@ -1,5 +1,13 @@
-http://localhost:8080/hello/jax-rs
+http://localhost:8080/hello/jax-rs/one
 
 ###
 
-http://localhost:8080/hello/mp-rest-client
+http://localhost:8080/hello/jax-rs/all
+
+###
+
+http://localhost:8080/hello/mp-rest-client/one
+
+###
+
+http://localhost:8080/hello/mp-rest-client/all

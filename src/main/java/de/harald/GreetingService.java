@@ -1,6 +1,7 @@
 package de.harald;
 
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,16 +13,15 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("/hello")
 @RegisterRestClient
+@Produces(MediaType.APPLICATION_JSON)
 public interface GreetingService {
 
     @GET
     @Path("/one/{id}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getOne(@PathParam("id") Long id);
+    public Greeting getOne(@PathParam("id") Long id);
 
     @GET
     @Path("/all")
-    @Produces(MediaType.TEXT_PLAIN)
-    public List<String> getAll();
+    public CompletionStage<List<Greeting>> getAll();
     
 }
