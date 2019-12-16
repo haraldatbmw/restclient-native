@@ -11,26 +11,28 @@ import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 @ApplicationScoped
-public class GreetingInteractiveQuery extends InteractiveQueryBase<Long, Greeting> {
+public class GreetingInteractiveQuery 
+    extends InteractiveQueryBase<Long, Greeting, GreetingService> {
 
-    // function for fetching one message by the key
-    private static final BiFunction<URL, Long, Greeting> getOne = (url, id) -> {
-        GreetingService srv = RestClientBuilder.newBuilder()
+    // function returning the concrete rest-client
+    private static final Function<URL, GreetingService> GET_REST_CLIENT = (url) -> {
+        return RestClientBuilder.newBuilder()
             .baseUrl(url)
             .build(GreetingService.class);
-        return srv.getOne(id);
+    };
+
+    // function for fetching one message by the key
+    private static final BiFunction<GreetingService, Long, Greeting> GET_ONE = (restClient, id) -> {
+        return restClient.getOne(id);
     };
 
     // function for fetching all messages from the local state-store
-    private static final Function<URL, CompletionStage<List<Greeting>>> getAll = (url) -> {
-        GreetingService srv = RestClientBuilder.newBuilder()
-            .baseUrl(url)
-            .build(GreetingService.class);
-        return srv.getAll();
+    private static final Function<GreetingService, CompletionStage<List<Greeting>>> GET_ALL = (restClient) -> {
+        return restClient.getAll();
     };
 
     public GreetingInteractiveQuery() {
-        super("greetings-statestore", getOne, getAll);
+        super("greetings-statestore", GET_REST_CLIENT, GET_ONE, GET_ALL);
     }
 
 }
